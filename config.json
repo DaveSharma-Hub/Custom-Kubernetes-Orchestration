@@ -1,0 +1,16 @@
+[
+    {
+        "name":"first",
+        "location":"C://Users//Daves//git//Custom-Kubernetes-Orchestration//test//Dockerfile",
+        "count":1,
+        "internalPort":3000,
+        "externalPort":4000
+    },
+    {
+        "name":"second",
+        "location":"C://Users//Daves//git//Custom-Kubernetes-Orchestration//test//Dockerfile",
+        "count":1,
+        "internalPort":3000,
+        "externalPort":4001
+    }
+]
