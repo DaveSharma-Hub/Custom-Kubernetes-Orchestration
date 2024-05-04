@@ -1,6 +1,5 @@
-var exec = require('child_process').exec;
+const exec = require('child_process').exec;
 
-const { stdout } = require('process');
 const images = require('./config.json');
 
 class Orchestration{
@@ -128,17 +127,6 @@ class Orchestration{
         return new Promise((res,_)=>setTimeout(res,time));
     }
     async runOrchestration(){
-        // const fn = (time) => {
-        //     this.callHealthCheck(this.formattedImages);
-        //     setTimeout(() =>{
-        //         fn(time);
-        //     }, time);
-        // };
-
-        // await this.sleep(2000);
-        // setTimeout(()=>{
-        //     fn(2000);
-        // }, 2000);
         setInterval(()=>this.callHealthCheck(this.formattedImages), 2000);
     }
 }
