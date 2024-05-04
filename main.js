@@ -1,5 +1,6 @@
 var exec = require('child_process').exec;
 
+const { stdout } = require('process');
 const images = require('./config.json');
 
 class Orchestration{
@@ -32,8 +33,11 @@ class Orchestration{
     }
 
     async removeContainers(images){
+        console.log("Removed", images);
         const removedContainersPromise = images.map(async (image)=>{
-            await this.sysCall(`docker rm $(docker ps -aqf "name=${image.id}")`,()=>{});
+            let containerId = null;
+            await this.sysCall(`docker ps -aqf "name=${image.id}"`,()=>{},(stdout)=>{containerId=stdout});
+            await this.sysCall(`docker rm ${containerId}`,()=>{});
         });
         await Promise.all(removedContainersPromise);
     }
@@ -52,8 +56,27 @@ class Orchestration{
         });
 
         await Promise.all(callHealthCheckPromise);
-        await this.removeContainers(errored);
-        await this.runImages(errored);
+
+        if(errored.length>0){
+            await this.removeContainers(errored);
+    
+            await this.sleep(500);
+            let removed = [];
+            while(removed.length != errored.length){
+                removed = [];
+                const removedPromise = errored.map(async(image)=>{
+                    await this.sysCall(`docker container inspect -f '{{.State.Status}}' "${image.id}"`,()=>{
+                        removed.push(image);
+                    },(stdout)=>{
+                        if(stdout.includes(`No such container: ${image.id}`)){
+                            removed.push(image);
+                        }
+                    });
+                });
+                await Promise.all(removedPromise);
+            }
+            await this.runImages(errored);
+        }
     }
 
 
@@ -105,17 +128,18 @@ class Orchestration{
         return new Promise((res,_)=>setTimeout(res,time));
     }
     async runOrchestration(){
-        const fn = (time) => {
-            this.callHealthCheck(this.formattedImages);
-            setTimeout(() =>{
-                fn(time);
-            }, time);
-        };
+        // const fn = (time) => {
+        //     this.callHealthCheck(this.formattedImages);
+        //     setTimeout(() =>{
+        //         fn(time);
+        //     }, time);
+        // };
 
-        await this.sleep(2000);
-        setTimeout(()=>{
-            fn(2000);
-        }, 2000);
+        // await this.sleep(2000);
+        // setTimeout(()=>{
+        //     fn(2000);
+        // }, 2000);
+        setInterval(()=>this.callHealthCheck(this.formattedImages), 2000);
     }
 }
 
