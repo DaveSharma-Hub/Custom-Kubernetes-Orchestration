@@ -1,6 +1,6 @@
 const exec = require('child_process').exec;
 
-const images = require('./config.json');
+const images = require('../../config.json');
 
 class Orchestration{
     runningContainers = [];
@@ -131,10 +131,14 @@ class Orchestration{
     }
 }
 
-async function start(){
-    const instance = new Orchestration(images);
-    await instance.setupOrchestration();
-    await instance.runOrchestration();
-}
+module.exports = {
+    Orchestration: Orchestration
+};
 
-start().then().catch();
+// async function start(){
+//     const instance = new Orchestration(images);
+//     await instance.setupOrchestration();
+//     await instance.runOrchestration();
+// }
+
+// start().then().catch();
