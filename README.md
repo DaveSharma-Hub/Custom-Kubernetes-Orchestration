@@ -9,4 +9,4 @@ In the event that a running container exits or fails, it will automatically rege
 - Ensures the minimum of containers are always running and will regenerate upon failure.
 
 ## Todo:
-- Will autoscale based on rate algorithm (exponential, linear etc.) to a maximum number of containers
+- Will autoscale based on rate algorithm (exponential, linear etc.) to a maximum number of containers based on the ingress load
